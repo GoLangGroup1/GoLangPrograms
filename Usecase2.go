@@ -21,18 +21,21 @@ func main() {
 	for{
 
 	fmt.Println("1. Add event details")
-	fmt.Println("2. Display event details")
-	fmt.Println("3. Exit")
+	fmt.Println("2. Delete event details")
+	fmt.Println("3. Display event details")
+	fmt.Println("4. Exit")
 
 	fmt.Println("Enter option:")
 	fmt.Scanln(&option)
 
 	switch option {
 	case 1:
-		nspEventSlice = append(nspEventSlice, addEventDetails()...)
+		nspEventSlice = append(nspEventSlice, addEventDetails(nspEventSlice)...)
 	case 2:
-		displayEventDetails(nspEventSlice)
+		nspEventSlice = deleteEventDetails(nspEventSlice)
 	case 3:
+		displayEventDetails(nspEventSlice)
+	case 4:
 		return
 	default:
 		fmt.Println("No such option")
@@ -41,8 +44,14 @@ func main() {
 }
 
 func displayEventDetails(nspEventSlice []NspEvent){
-
-	fmt.Println("**** Displaying event details *** ")
+	
+	fmt.Println("---------------------------------------------------------")
+	
+	if(len(nspEventSlice) > 0){
+		fmt.Println("**** Displaying event details *** ")
+	}else{
+		fmt.Println("No events YET !!!")
+	}
 
 	for _,nspEvent := range nspEventSlice {
 		fmt.Println("---------------------------------------------------------")
@@ -56,7 +65,7 @@ func displayEventDetails(nspEventSlice []NspEvent){
 	fmt.Println()
 }
 
-func addEventDetails()(nspEventSlice []NspEvent){
+func addEventDetails(nspEventSliceIn []NspEvent)(nspEventSlice []NspEvent){
 	var teamMemberSlice []string;
 	var nspEvent NspEvent;
 	var option int;
@@ -64,6 +73,13 @@ func addEventDetails()(nspEventSlice []NspEvent){
 
 	fmt.Println("Enter event name:")
 	fmt.Scanln(&nspEvent.name)
+
+	for _,value := range nspEventSliceIn {
+		if(nspEvent.name == value.name){
+			fmt.Println("Event already present... returning to MAIN menu")
+			return nspEventSliceIn
+		}
+	}
 
 	fmt.Println("Enter event date:")
 	fmt.Scanln(&nspEvent.date)
@@ -113,4 +129,22 @@ loopOne:
 
 	nspEventSlice = append(nspEventSlice, nspEvent)
 	return nspEventSlice
+}
+
+func deleteEventDetails(nspEventSliceIn []NspEvent)(nspEventSliceOut []NspEvent){
+
+	var deleteEvent string
+	var deleteEventIndex int
+	
+	fmt.Println("Enter event name to be delted:")
+	fmt.Scanln(&deleteEvent)
+
+	for index,nspEvent := range nspEventSliceIn {
+		if(deleteEvent == nspEvent.name) {
+			deleteEventIndex = index
+		}
+	}
+
+	nspEventSliceOut = append(nspEventSliceIn[:deleteEventIndex], nspEventSliceIn[deleteEventIndex+1:]...)
+	return nspEventSliceOut
 }
